@@ -31,9 +31,9 @@
       >
         <div [formArrayName]="question.id + ''">
           <div *ngFor="let option of question.options; let i = index">
-            <div [formControlName]="i">
+            <!-- <div [formControlName]="i">
               <mat-checkbox>{{ option.label }}</mat-checkbox>
-            </div>
+            </div> -->
           </div>
         </div>
       </div>

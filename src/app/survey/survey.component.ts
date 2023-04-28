@@ -92,16 +92,15 @@ export class SurveyComponent {
           this.formBuilder.array([])
         );
 
-        // TODO
-        // question.options!.map((option, i) => {
-        //   (this.surveyForm.get([question.id + '']) as any).push(
-        //     new FormControl(
-        //       option
-        //       // `${question.id}_${i}`,
-        //       // this.formBuilder.control(option)
-        //     )
-        //   );
-        // });
+        question.options!.map((option, i) => {
+          (this.surveyForm.get([question.id + '']) as any).push(
+            new FormControl(
+              option
+              // `${question.id}_${i}`,
+              // this.formBuilder.control(option)
+            )
+          );
+        });
       } else {
         this.surveyForm.addControl(
           question.id + '',
