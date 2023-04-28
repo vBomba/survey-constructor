@@ -1,0 +1,13 @@
+form {
+  padding: 20px;
+  width: 500px;
+
+  .question {
+    display: flex;
+    flex-direction: column;
+  }
+
+  button {
+    margin: 20px;
+  }
+}
