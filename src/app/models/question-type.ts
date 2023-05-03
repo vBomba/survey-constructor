@@ -1,5 +1,6 @@
 export enum QuestionType {
-  CheckboxGroup = 'checkbox-group',
+  Checkbox = 'checkbox',
+  MultipleCheckbox = 'multiple-checkbox',
   Radio = 'radio',
   Text = 'text',
   Select = 'select',

@@ -7,7 +7,7 @@ export interface Question {
   nextQuestionId?: string;
   validator?: OptionValidator;
   options?: Option[];
-  value?: string | string[] | Option | Option[];
+  value?: string | string[] | Option | Option[] | boolean;
 }
 
 export interface Option {

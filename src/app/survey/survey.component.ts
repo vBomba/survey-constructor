@@ -14,7 +14,6 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSelectModule } from '@angular/material/select';
-import { FormArray } from '@angular/forms';
 
 @Component({
   selector: 'app-survey',
@@ -33,8 +32,10 @@ import { FormArray } from '@angular/forms';
   ],
 })
 export class SurveyComponent {
-  surveyForm: FormGroup;
   QuestionType: typeof QuestionType = QuestionType;
+  surveyForm: FormGroup;
+
+  submittedValue: any;
   surveyQuestions: Question[] = [
     {
       id: '1',
@@ -50,7 +51,7 @@ export class SurveyComponent {
     },
     {
       id: '2',
-      type: QuestionType.CheckboxGroup,
+      type: QuestionType.MultipleCheckbox,
       question: 'Which of the following pets do you have?',
       value: ['dog'],
       options: [
@@ -81,7 +82,6 @@ export class SurveyComponent {
       ],
       nextQuestionId: '5',
     },
-
     {
       id: '5',
       type: QuestionType.MultipleSelect,
@@ -93,6 +93,17 @@ export class SurveyComponent {
         { value: 'bird', label: 'Bird' },
         { value: 'fish', label: 'Fish' },
       ],
+      nextQuestionId: '6',
+    },
+    {
+      id: '6',
+      type: QuestionType.Checkbox,
+      question: 'This single checkbox work correct?',
+      value: true,
+      options: [
+        { value: 'corect', label: 'Correct' },
+        { value: 'not-correct', label: 'Correct' },
+      ],
       nextQuestionId: '3',
     },
   ];
@@ -102,7 +113,7 @@ export class SurveyComponent {
 
     this.surveyQuestions.forEach((question) => {
       switch (question.type) {
-        case QuestionType.CheckboxGroup:
+        case QuestionType.MultipleCheckbox:
           this.surveyForm.addControl(
             question.id,
             this.formBuilder.array(
@@ -120,7 +131,6 @@ export class SurveyComponent {
           this.surveyForm.addControl(
             question.id,
             this.formBuilder.control(question.value ?? null)
-            // this.formBuilder.control(null, validators)
           );
       }
     });
@@ -129,16 +139,22 @@ export class SurveyComponent {
   onSubmit(): void {
     const surveyResults = this.surveyForm.value;
 
-    this.surveyQuestions.forEach((q) => {
-      if (q.type === QuestionType.CheckboxGroup) {
+    this.surveyQuestions.forEach((q, i) => {
+      if (q.type === QuestionType.MultipleCheckbox) {
         surveyResults[q.id] = surveyResults[q.id]
           .map((v: boolean | null, i: number) => {
             return v ? q.options![i].value : '';
           })
           .filter(Boolean);
       }
+
+      if (q.type === QuestionType.Checkbox) {
+        surveyResults[q.id] = surveyResults[q.id]
+          ? this.surveyQuestions[i].options![0].value
+          : this.surveyQuestions[i].options![1].value;
+      }
     });
 
-    console.log(surveyResults, this.surveyForm);
+    this.submittedValue = surveyResults;
   }
 }
