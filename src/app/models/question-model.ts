@@ -1,13 +1,13 @@
 import { QuestionType } from './question-type';
 
 export interface Question {
-  id: string | number;
+  id: string;
   type: QuestionType;
   question: string;
-  nextQuestionId: string | number | null;
+  nextQuestionId?: string;
   validator?: OptionValidator;
   options?: Option[];
-  value?: string | Option | Option[];
+  value?: string | string[] | Option | Option[];
 }
 
 export interface Option {

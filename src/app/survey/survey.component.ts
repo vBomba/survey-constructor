@@ -14,6 +14,7 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSelectModule } from '@angular/material/select';
+import { FormArray } from '@angular/forms';
 
 @Component({
   selector: 'app-survey',
@@ -36,7 +37,7 @@ export class SurveyComponent {
   QuestionType: typeof QuestionType = QuestionType;
   surveyQuestions: Question[] = [
     {
-      id: 1,
+      id: '1',
       type: QuestionType.Radio,
       question: 'What is your favorite color?',
       value: 'red',
@@ -45,30 +46,30 @@ export class SurveyComponent {
         { value: 'green', label: 'Green' },
         { value: 'blue', label: 'Blue' },
       ],
-      nextQuestionId: 2,
+      nextQuestionId: '2',
     },
     {
-      id: 2,
-      type: QuestionType.Checkbox,
+      id: '2',
+      type: QuestionType.CheckboxGroup,
       question: 'Which of the following pets do you have?',
-      value: 'dog',
+      value: ['dog'],
       options: [
         { value: 'dog', label: 'Dog' },
         { value: 'cat', label: 'Cat' },
         { value: 'bird', label: 'Bird' },
         { value: 'fish', label: 'Fish' },
       ],
-      nextQuestionId: 3,
+      nextQuestionId: '3',
     },
     {
-      id: 3,
+      id: '3',
       type: QuestionType.Text,
       question: 'What is your favorite food?',
-      nextQuestionId: 4,
+      nextQuestionId: '4',
       value: 'test',
     },
     {
-      id: 4,
+      id: '4',
       type: QuestionType.Select,
       question: 'Which of the following pets do you have?',
       value: 'dog',
@@ -78,7 +79,21 @@ export class SurveyComponent {
         { value: 'bird', label: 'Bird' },
         { value: 'fish', label: 'Fish' },
       ],
-      nextQuestionId: 3,
+      nextQuestionId: '5',
+    },
+
+    {
+      id: '5',
+      type: QuestionType.MultipleSelect,
+      question: 'Which of the following pets do you have?',
+      value: ['dog'],
+      options: [
+        { value: 'dog', label: 'Dog' },
+        { value: 'cat', label: 'Cat' },
+        { value: 'bird', label: 'Bird' },
+        { value: 'fish', label: 'Fish' },
+      ],
+      nextQuestionId: '3',
     },
   ];
 
@@ -86,33 +101,44 @@ export class SurveyComponent {
     this.surveyForm = this.formBuilder.group({});
 
     this.surveyQuestions.forEach((question) => {
-      if (question.type === QuestionType.Checkbox) {
-        this.surveyForm.addControl(
-          question.id + '',
-          this.formBuilder.array([])
-        );
-
-        question.options!.map((option, i) => {
-          (this.surveyForm.get([question.id + '']) as any).push(
-            new FormControl(
-              option
-              // `${question.id}_${i}`,
-              // this.formBuilder.control(option)
+      switch (question.type) {
+        case QuestionType.CheckboxGroup:
+          this.surveyForm.addControl(
+            question.id,
+            this.formBuilder.array(
+              question.options!.map((o) => {
+                return new FormControl(
+                  (question.value as string[]).includes(o.value)
+                );
+              })
             )
           );
-        });
-      } else {
-        this.surveyForm.addControl(
-          question.id + '',
-          this.formBuilder.control(question.value ?? null)
-          // this.formBuilder.control(null, validators)
-        );
+
+          break;
+
+        default:
+          this.surveyForm.addControl(
+            question.id,
+            this.formBuilder.control(question.value ?? null)
+            // this.formBuilder.control(null, validators)
+          );
       }
     });
   }
 
-  onSubmit() {
+  onSubmit(): void {
     const surveyResults = this.surveyForm.value;
-    console.log(surveyResults);
+
+    this.surveyQuestions.forEach((q) => {
+      if (q.type === QuestionType.CheckboxGroup) {
+        surveyResults[q.id] = surveyResults[q.id]
+          .map((v: boolean | null, i: number) => {
+            return v ? q.options![i].value : '';
+          })
+          .filter(Boolean);
+      }
+    });
+
+    console.log(surveyResults, this.surveyForm);
   }
 }

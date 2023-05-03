@@ -9,13 +9,13 @@
         #autosize="cdkTextareaAutosize"
         matInput
         [type]="question.type"
-        [formControlName]="question.id + ''"
+        [formControlName]="question.id"
       >
       </textarea>
 
       <mat-radio-group
         *ngSwitchCase="QuestionType.Radio"
-        [formControlName]="question.id + ''"
+        [formControlName]="question.id"
       >
         <mat-radio-button
           *ngFor="let option of question.options"
@@ -25,21 +25,31 @@
         </mat-radio-button>
       </mat-radio-group>
 
-      <div
-        *ngSwitchCase="QuestionType.Checkbox"
-        [formArrayName]="question.id + ''"
-      >
-        <div [formArrayName]="question.id + ''">
-          <div *ngFor="let option of question.options; let i = index">
-            <!-- <div [formControlName]="i">
-              <mat-checkbox>{{ option.label }}</mat-checkbox>
-            </div> -->
-          </div>
+      <div *ngSwitchCase="QuestionType.CheckboxGroup">
+        <div
+          *ngFor="let option of question.options; let i = index"
+          [formArrayName]="question.id"
+        >
+          <mat-checkbox [formControlName]="i">{{ option.label }}</mat-checkbox>
         </div>
       </div>
 
       <mat-form-field *ngSwitchCase="QuestionType.Select" appearance="outline">
-        <mat-select [formControlName]="question.id + ''">
+        <mat-select [formControlName]="question.id">
+          <mat-option
+            *ngFor="let option of question.options"
+            [value]="option.value"
+          >
+            {{ option.label }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field
+        *ngSwitchCase="QuestionType.MultipleSelect"
+        appearance="outline"
+      >
+        <mat-select [formControlName]="question.id" [multiple]="true">
           <mat-option
             *ngFor="let option of question.options"
             [value]="option.value"
@@ -52,4 +62,8 @@
   </div>
 
   <button mat-raised-button color="primary">Accept</button>
+
+  <!-- <pre>
+  {{ surveyForm.value | json }}
+  </pre> -->
 </form>
